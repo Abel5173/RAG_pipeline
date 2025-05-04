@@ -1,0 +1,172 @@
+RAG Application Development Prompt for Manus (Local Deployment)
+Objective
+Develop a Retrieval-Augmented Generation (RAG) application for local deployment on a personal device, supporting two user roles: Admin and Staff. Admins upload documents (PDF, TXT, DOCX) to be embedded into a vector store for domain-specific question-answering (Q&A). Staff users query the system to receive accurate, contextually relevant answers based on the embedded documents. The application uses the recommended tech stack with FastAPI as the backend, optimized for offline operation and local resource constraints.
+Detailed Requirements
+1. User Roles and Permissions
+
+Admin User:
+Upload, manage, and delete documents (PDF, TXT, DOCX).
+View usage logs (e.g., query counts, uploaded documents).
+Access a dashboard to monitor document embeddings and vector store status.
+
+
+Staff User:
+Submit queries via a Q&A interface for domain-specific answers.
+View personal query history.
+No access to document management or admin dashboard.
+
+
+
+2. Core Functionalities
+
+Document Upload and Processing:
+Admins upload documents via a web interface.
+Extract text from documents (primarily text-based PDFs, with fallback for scanned PDFs).
+Chunk extracted text into segments (e.g., 500-1000 tokens) for embedding.
+
+
+Embedding and Vector Store:
+Embed text chunks using Nomic Embed Text v1 (Hugging Face).
+Store embeddings in FAISS for fast, offline retrieval.
+Include metadata (e.g., document ID, chunk ID) with embeddings.
+
+
+Retrieval-Augmented Q&A:
+Staff users submit queries via a chat-like web interface.
+Retrieve relevant document chunks using FAISS (cosine similarity).
+Pass chunks to Mistral-7B (via Ollama) for answer generation. Llama 3.1 8B is excluded due to licensing complexity for local use.
+Responses include source references (e.g., document name, page number if applicable).
+
+
+Query History and Logging:
+Store queries and responses in SQLite (lightweight, local alternative to PostgreSQL).
+Admins view usage statistics (e.g., queries per user, document usage).
+Staff users view their query history.
+
+
+
+3. Technical Stack
+
+Backend:
+Framework: FastAPI (Python) for RESTful APIs, optimized for local async performance.
+Database: SQLite for user data, query history, and metadata (lightweight, serverless, offline).
+File Storage: Local filesystem for uploaded documents.
+
+
+Text Extraction:
+Tool: PyMuPDF for text-based PDFs (fast, 99% accuracy, ~50 MB, offline).
+Fallback: Donut for scanned PDFs (optional, enabled only if scanned PDFs are expected, ~1 GB).
+
+
+Embedding:
+Model: Nomic Embed Text v1 (137M parameters, 8192-token context, Apache 2.0, offline, CPU-efficient).
+
+
+Vector Store:
+Tool: FAISS (fast ANN search, ~100 MB, offline, MIT license, CPU-scalable).
+
+
+LLM:
+Model: Mistral-7B via Ollama (85% F1 on SQuAD, 8k-token context, Apache 2.0, offline, ~4 GB VRAM or CPU-compatible).
+
+
+Orchestration:
+Framework: LangChain for pipeline integration, chunking (RecursiveCharacterTextSplitter), and Ollama support (MIT license, offline).
+
+
+Frontend:
+Framework: React with Tailwind CSS for responsive, lightweight UI.
+CDN: Use cdn.jsdelivr.net for React, ReactDOM, and Babel (cached locally after first load).
+Features:
+Admin dashboard for document management and usage monitoring.
+Staff Q&A interface with chat UX and query history.
+
+
+Security: Implement CSP, DOMPurify, and JWT for XSS/CSRF prevention.
+
+
+Authentication:
+JWT for secure authentication and role-based access control.
+Local session management using FastAPI’s built-in security features.
+
+
+Deployment:
+Run locally without Docker to minimize overhead (Docker optional for advanced users).
+Use Python virtual environment (venv) for dependency management.
+Store configuration (e.g., API keys, model paths) in a .env file.
+
+
+
+4. System Workflow
+
+Admin Uploads Document:
+Admin logs in and uploads a document via the React interface.
+FastAPI validates file format and saves it to the local filesystem.
+PyMuPDF extracts text (Donut for scanned PDFs if enabled).
+LangChain chunks text, Nomic Embed Text v1 generates embeddings, and FAISS stores them with metadata in a local index.
+
+
+Staff Submits Query:
+Staff user submits a query via the React interface.
+FastAPI embeds the query with Nomic Embed Text v1, retrieves chunks from FAISS, and passes them to Mistral-7B via LangChain.
+Response and query are logged in SQLite and displayed to the user.
+
+
+Admin Monitors System:
+Admin views document status, embedding progress, and usage logs on the dashboard.
+Can delete or re-upload documents from the local filesystem.
+
+
+
+5. Non-Functional Requirements
+
+Performance:
+Query response time < 3 seconds on a mid-range CPU (e.g., 4-core, 8GB RAM).
+Document processing and embedding < 2 minutes for a 10MB document.
+
+
+Resource Usage:
+Total disk footprint < 10 GB (including models, FAISS index, SQLite, and documents).
+Memory usage < 8 GB during peak operation (Mistral-7B on CPU).
+
+
+Security:
+Encrypt sensitive data (e.g., JWT secrets) in the .env file.
+Role-based access control to prevent unauthorized access.
+Sanitize inputs to prevent injection attacks.
+
+
+Usability:
+Simple setup with a single run.sh or run.bat script for launching the app.
+Intuitive, responsive UI for desktop use (mobile support optional).
+Provide feedback (e.g., progress bars, success/error messages).
+
+
+
+6. Deliverables
+
+Functional RAG application for local execution.
+Git repository with source code and documentation (README with setup instructions).
+Python virtual environment setup script (requirements.txt).
+Sample .env file for configuration.
+Basic unit tests for FastAPI endpoints and LangChain pipeline.
+User guide for Admins and Staff (Markdown or plain text).
+
+7. Success Criteria
+
+Admins can upload documents, and embeddings are stored/retrievable in FAISS locally.
+Staff users receive accurate, domain-specific answers with source references.
+Application runs offline on a local device with minimal setup.
+UI is responsive and secure (XSS/CSRF prevention).
+No external dependencies (e.g., cloud services) required.
+
+8. Additional Notes
+
+Local Optimization: Prioritize lightweight tools (SQLite, FAISS, PyMuPDF) to minimize resource usage on a personal device.
+LLM Choice: Use Mistral-7B for its permissive license and CPU compatibility. Exclude Llama 3.1 8B to avoid licensing complexity.
+Text Extraction: Enable Donut only if scanned PDFs are expected, as it adds ~1 GB to the footprint. Include a configuration flag to disable it.
+React Security: Avoid <form> tags with onSubmit due to sandbox restrictions; use button click handlers.
+Offline Operation: Ensure all components (PyMuPDF, Nomic Embed Text v1, FAISS, Mistral-7B, LangChain) are fully offline-compatible.
+Setup Simplicity: Provide a setup.sh script to install dependencies and download models (e.g., Mistral-7B via Ollama, Nomic Embed Text v1 via Hugging Face).
+Hardware Assumption: Target a mid-range laptop (e.g., 4-core CPU, 8GB RAM, 20GB free disk space). Document any GPU requirements for Mistral-7B if available.
+
