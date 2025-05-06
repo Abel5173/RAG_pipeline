@@ -28,7 +28,7 @@ def extract_text_from_file(filepath: str) -> str:
 
     try:
         if file_extension.lower() == ".pdf":
-            doc = fitz.open(filepath)
+            doc = pymupdf.open(filepath)
             for page in doc:
                 text += page.get_text()
             doc.close()

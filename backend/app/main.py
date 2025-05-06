@@ -1,10 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.startup import create_initial_users
 
 from .core import database, security 
-from .routers import auth, documents, qa
+import auth, documents, qa
 from .services import user_service # Import user_service
 # Corrected import: Use db_core for models, schemas are in models
 from .core import database as db_core

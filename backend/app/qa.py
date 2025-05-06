@@ -14,7 +14,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-
 from .core import database, dependencies
 from .core import database as db_core
 from .models import schemas
@@ -23,7 +22,7 @@ from .services import qa_service
 # Create a router for the QA endpoints
 router = APIRouter()
 
-# Define the API endpoints for query 
+# Endpoint to process a query using RAG
 @router.post("/query", response_model=schemas.QueryResponse)
 def ask_question(
     query: schemas.QueryRequest, # Request body containing the query text
@@ -44,7 +43,7 @@ def ask_question(
                 detail="No sources found for the provided query."
             )
 
-        # Log the query and response
+        # Log the query attempt with the answer and sources
         qa_service.log_query(
             db=db, 
             user_id=current_user.id,
@@ -71,18 +70,19 @@ def ask_question(
             detail=f"An error occurred during query processing: {e}"
         )
 
-# 
+# Endpoint to retrieve the query history for the current user
 @router.get("/history", response_model=List[schemas.QueryLogInfo])
 def get_query_history(
-    skip: int = 0,
-    limit: int = 100,
-    current_user: db_core.User = Depends(dependencies.require_staff_or_admin),
-    db: Session = Depends(database.get_db)
+    skip: int = 0, # Offset for pagination
+    limit: int = 100, # Limit for pagination
+    current_user: db_core.User = Depends(dependencies.require_staff_or_admin), # Dependency to get the current user
+    db: Session = Depends(database.get_db) # Dependency to get the database session
 ):
     """Retrieves the query history for the current user."""
     history = qa_service.get_user_query_history(db, user_id=current_user.id, skip=skip, limit=limit)
     return history
 
+# Endpoint to retrieve all query logs (Admin only)
 @router.get("/history/all", response_model=List[schemas.QueryLogInfo])
 def get_all_query_history(
     skip: int = 0,

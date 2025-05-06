@@ -4,8 +4,8 @@ from typing import Optional
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
-from .config import settings
-from ..models import schemas
+from .core.config import settings
+from .models import schemas
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
