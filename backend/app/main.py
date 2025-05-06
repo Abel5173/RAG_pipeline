@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .core import database, security # Import security for hashing
+from app.core.startup import create_initial_users
+
+from .core import database, security 
 from .routers import auth, documents, qa
 from .services import user_service # Import user_service
 # Corrected import: Use db_core for models, schemas are in models
@@ -9,7 +11,7 @@ from .core import database as db_core
 from .models import schemas
 
 # Initialize database tables
-db_core.init_db()
+db_core.init_db() 
 
 # --- Create default users if not exists ---
 def create_initial_users():
@@ -48,7 +50,6 @@ def create_initial_users():
             print("Staff user already exists.")
 
 create_initial_users()
-# --- End initial user creation ---
 
 app = FastAPI(title="Local RAG Application API")
 

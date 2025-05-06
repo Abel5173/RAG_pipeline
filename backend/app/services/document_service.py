@@ -5,7 +5,7 @@ import os
 from typing import List, Optional, Tuple
 
 # Text extraction libraries
-import fitz # PyMuPDF
+import pymupdf # PyMuPDF
 from unstructured.partition.auto import partition
 
 from ..core.config import settings

@@ -15,4 +15,12 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+HF_LLM_REPO = os.getenv("HF_LLM_REPO")
+VECTOR_STORE_DIR = os.getenv("VECTOR_STORE_DIR", "./vector_store")
 
