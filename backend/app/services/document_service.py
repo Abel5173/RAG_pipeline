@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple
 
 # Text extraction libraries
 import pymupdf # PyMuPDF
-from unstructured.partition.auto import partition
+# from unstructured.partition.auto import partition
 
 from ..core.config import settings
 # Corrected import: database_models are in core.database
@@ -32,10 +32,10 @@ def extract_text_from_file(filepath: str) -> str:
             for page in doc:
                 text += page.get_text()
             doc.close()
-        elif file_extension.lower() in [".docx", ".txt"]:
-            # Use unstructured for DOCX and TXT
-            elements = partition(filename=filepath)
-            text = "\n\n".join([str(el) for el in elements])
+        # elif file_extension.lower() in [".docx", ".txt"]:
+        #     # Use unstructured for DOCX and TXT
+        #     elements = partition(filename=filepath)
+        #     text = "\n\n".join([str(el) for el in elements])
         else:
             print(f"Unsupported file type for text extraction: {file_extension}")
             raise ValueError(f"Unsupported file type: {file_extension}")

@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 import os
 from typing import List, Tuple # Added Tuple
 
-from ..core import database, dependencies, config
-from ..models import schemas
+from backend.app.core import database, dependencies, config
+from backend.app.models import schemas
 # Corrected import: database_models are in core.database
-from ..core import database as db_core
-from ..services import document_service
-from ..services.qa_service import process_and_embed_document # Import the embedding function
+from backend.app.core import database as db_core
+from backend.app.services import document_service
+from backend.app.services.qa_service import process_and_embed_document # Import the embedding function
 
 router = APIRouter()
 

@@ -1,13 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-
-from .core import database, security 
-import auth, documents, qa
-from .services import user_service # Import user_service
-# Corrected import: Use db_core for models, schemas are in models
+from .core import database 
+import backend.app.api.v2.auth as auth, backend.app.api.v2.documents as documents, backend.app.api.v2.qa as qa
+from .services import user_service 
 from .core import database as db_core
 from .models import schemas
+from .core import security
 
 # Initialize database tables
 db_core.init_db() 
@@ -56,7 +54,7 @@ app = FastAPI(title="Local RAG Application API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], # Allows all origins for local dev
-    allow_credentials=True,
+    allow_credentials=True, # Allows credentials like cookies, authorization headers, etc.
     allow_methods=["*"], # Allows all methods
     allow_headers=["*"], # Allows all headers
 )

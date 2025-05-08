@@ -14,10 +14,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
-from .core import database, dependencies
-from .core import database as db_core
-from .models import schemas
-from .services import qa_service
+from backend.app.core import database, dependencies
+from backend.app.core import database as db_core
+from backend.app.models import schemas
+from backend.app.services import qa_service
 
 # Create a router for the QA endpoints
 router = APIRouter()
