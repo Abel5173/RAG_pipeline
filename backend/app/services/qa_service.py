@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List, Tuple
 import os
+import redis
+import pickle
 
 # Langchain components
 from langchain_community.vectorstores import FAISS
@@ -15,7 +17,8 @@ from ..core import database as db_core
 from ..models import schemas  # Schemas are still in models directory
 from ..core.config import settings
 # Import necessary functions
-from .document_service import extract_text_from_file, update_document_status, get_document
+from .document_service import extract_text_from_file
+from ..data_access import update_document_status, log_query, get_document
 
 # --- RAG Pipeline Components Initialization ---
 
@@ -25,16 +28,30 @@ embedding_encode_kwargs = {'normalize_embeddings': True}
 embeddings = HuggingFaceEmbeddings(
     model_name=embedding_model_name,
     # Trust remote code for Nomic
-    model_kwargs={'device': 		'cpu', 		'trust_remote_code': True},
+    model_kwargs={'device': 'cpu', 'trust_remote_code': True},
     encode_kwargs=embedding_encode_kwargs
 )
 
 # 2. LLM (Mistral-7B via Ollama)
-llm = OllamaLLM(model="mistral")  # Uses default localhost:11434
+llm = OllamaLLM(model="Llama3.1")  # Uses default localhost:11434
 
 # 3. Vector Store (FAISS)
 vector_store_path = os.path.join(settings.VECTOR_STORE_DIR, "faiss_index")
 vector_store: Optional[FAISS] = None
+
+redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+
+def get_cached_embedding(query: str):
+    cached = redis_client.get(query)
+    if cached:
+        return pickle.loads(cached)
+    return None
+
+
+def cache_embedding(query: str, embedding):
+    redis_client.set(query, pickle.dumps(embedding),
+                     ex=3600)  # Cache for 1 hour
 
 
 def load_vector_store() -> Optional[FAISS]:
@@ -60,10 +77,9 @@ def load_vector_store() -> Optional[FAISS]:
 
 load_vector_store()
 
-# 4. Text Splitter
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,  # As per requirements
-    chunk_overlap=150  # Common practice overlap
+    chunk_size=1500,  # Larger chunks for fewer embeddings
+    chunk_overlap=200
 )
 
 # --- RAG Processing Functions ---
@@ -72,8 +88,7 @@ text_splitter = RecursiveCharacterTextSplitter(
 def process_and_embed_document(doc_id: int):
     """Background task to extract text, chunk, embed, and add a document to the vector store."""
     global vector_store
-    # Create a new database session for this background task
-    db = next(db_core.get_db())
+    db = next(db_core.get_db())  # Create a new database session
     try:
         doc_record = get_document(db, doc_id)
         if not doc_record:

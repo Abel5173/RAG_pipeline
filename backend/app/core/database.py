@@ -1,6 +1,6 @@
 from .config import settings
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Enum as SQLEnum, ForeignKey
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Enum as SQLEnum, ForeignKey, Boolean
+from sqlalchemy.orm import sessionmaker, Session, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from contextlib import contextmanager
 import datetime
@@ -19,6 +19,7 @@ Base = declarative_base()
 
 # --- Database Models ---
 
+
 class UserRole(enum.Enum):
     STAFF = "STAFF"
     ADMIN = "ADMIN"
@@ -28,9 +29,11 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(SQLEnum(UserRole, name="userrole", native_enum=False),
-                  nullable=False, default=UserRole.STAFF)
+    is_active = Column(Boolean, default=True)
+    is_admin = Column(Boolean, default=False)
+    role = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 
@@ -43,6 +46,8 @@ class Document(Base):
     uploaded_at = Column(DateTime, default=datetime.datetime.utcnow)
     uploaded_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     status = Column(String, default="uploaded")
+    version = Column(Integer, default=1)
+    history = relationship("DocumentHistory", back_populates="document")
 
 
 class QueryLog(Base):
@@ -55,9 +60,43 @@ class QueryLog(Base):
     source_references = Column(String, nullable=True)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
 
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+    id = Column(Integer, primary_key=True, index=True)
+    query_id = Column(Integer, ForeignKey("query_logs.id"), nullable=False)
+    rating = Column(Integer, nullable=False)  # e.g., 1-5
+    comment = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class DocumentAccessLog(Base):
+    __tablename__ = "document_access_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+    accessed_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class DocumentHistory(Base):
+    __tablename__ = "document_history"
+    id = Column(Integer, primary_key=True, index=True)
+    document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+    version = Column(Integer, nullable=False)
+    # e.g., "created", "updated", "deleted"
+    change_type = Column(String, nullable=False)
+    changed_by = Column(Integer, ForeignKey("users.id"),
+                        nullable=False)  # User who made the change
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+    # Optional field for additional details
+    details = Column(String, nullable=True)
+
+    document = relationship("Document", back_populates="history")
+    user = relationship("User")  # Assuming a User model exists
+
 # --- Database Initialization ---
+
+
 def init_db():
-    """Initialize database by creating all defined tables."""
     print("Initializing database...")
     try:
         Base.metadata.create_all(bind=engine)

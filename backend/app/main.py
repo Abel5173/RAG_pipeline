@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .core import database 
 import backend.app.api.v2.auth as auth, backend.app.api.v2.documents as documents, backend.app.api.v2.qa as qa
 from .services import user_service 
-from .core import database as db_core
+from backend.app.core import database as db_core
 from .models import schemas
 from .core import security
 
@@ -53,16 +53,16 @@ app = FastAPI(title="Local RAG Application API")
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allows all origins for local dev
-    allow_credentials=True, # Allows credentials like cookies, authorization headers, etc.
-    allow_methods=["*"], # Allows all methods
-    allow_headers=["*"], # Allows all headers
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"], 
+    allow_headers=["*"],
 )
 
 # Include routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(documents.router, prefix="/api/v1/documents", tags=["Documents"])
-app.include_router(qa.router, prefix="/api/v1/qa", tags=["Q&A"])
+app.include_router(qa.router, prefix="/api/v1/qa", tags=["Q&A and RAG"])
 
 @app.get("/")
 def read_root():
