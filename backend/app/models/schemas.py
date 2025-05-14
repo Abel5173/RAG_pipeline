@@ -29,6 +29,14 @@ class User(UserBase):
     class Config:
         from_attributes = True  # Use orm_mode in Pydantic v1
 
+
+class UserResponse(UserBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 # --- Token Schemas ---
 
 
