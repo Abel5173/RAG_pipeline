@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import LoadingSpinner from "../components/LoadingSpinner";
-import AuthContainer from "../components/common/AuthContainer";
 import { toast } from "react-toastify";
 
 const initialState = {
@@ -69,173 +68,273 @@ const Register: React.FC = () => {
   };
 
   return (
-    <AuthContainer
-      left={
-        <div className="max-w-md text-center">
-          <img
-            src="/vite.svg"
-            alt="Brand Logo"
-            className="h-16 w-16 mx-auto mb-6 drop-shadow-lg"
-          />
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-2 text-blue-700 tracking-tight">
-            Welcome to AI Assistant
-          </h1>
-          <p className="text-lg md:text-xl text-blue-900/80 mb-6">
-            Ask Questions & Get Quality Answers.
-            <br />
-            <span className="text-blue-400 font-semibold">
-              Start your journey today.
-            </span>
-          </p>
-          <div className="hidden md:block mt-12">
-            <img
-              src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
-              alt="Onboarding"
-              className="rounded-2xl shadow-lg opacity-80"
-            />
-          </div>
-        </div>
-      }
+    <div
+      className="min-h-screen w-full flex flex-col md:flex-row items-center justify-center font-['Montserrat',_Poppins,_Arial,_sans-serif] relative"
+      style={{
+        background: "linear-gradient(120deg, #941c8a 0%, #f7b620 100%)",
+      }}
     >
-      <motion.form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg p-8 space-y-6"
-        initial={{ scale: 0.98, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        aria-label="Sign up form"
-        noValidate
+      {/* Sparkle/Star Animation Layer */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <svg
+          width="100%"
+          height="100%"
+          className="absolute inset-0"
+          style={{ filter: "blur(0.5px)" }}
+        >
+          <g>
+            {[...Array(18)].map((_, i) => (
+              <circle
+                key={i}
+                cx={Math.random() * 100 + "%"}
+                cy={Math.random() * 100 + "%"}
+                r={Math.random() * 1.2 + 0.6}
+                fill="#fefffe"
+                opacity={Math.random() * 0.7 + 0.2}
+              >
+                <animate
+                  attributeName="opacity"
+                  values="0.2;1;0.2"
+                  dur={`${2 + Math.random() * 2}s`}
+                  repeatCount="indefinite"
+                  begin={`${i * 0.3}s`}
+                />
+              </circle>
+            ))}
+          </g>
+        </svg>
+      </div>
+      {/* Left: Branding */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="relative z-10 flex w-full md:w-1/2 h-full items-center justify-center py-12 px-6 md:px-12 bg-transparent"
       >
-        <h2 className="text-3xl md:text-4xl font-bold mb-2 text-blue-800">
-          Sign Up
-        </h2>
-        <p className="text-blue-600 mb-4">
-          Create your account to get started.
-        </p>
-        <div className="space-y-4">
+        <div className="flex flex-col items-center md:items-start text-center md:text-left">
+          {/* Logo/Icon */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.6, type: "spring" }}
+            className="mb-8"
+          >
+            {/* Brain + Lightning SVG */}
+            <svg
+              width="80"
+              height="80"
+              viewBox="0 0 80 80"
+              className="drop-shadow-lg"
+            >
+              <defs>
+                <radialGradient id="brainGlow" cx="50%" cy="50%" r="60%">
+                  <stop offset="0%" stopColor="#f7b620" stopOpacity="0.7" />
+                  <stop offset="100%" stopColor="#941c8a" stopOpacity="0.2" />
+                </radialGradient>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <ellipse
+                cx="40"
+                cy="40"
+                rx="28"
+                ry="26"
+                fill="url(#brainGlow)"
+                filter="url(#glow)"
+                opacity="0.9"
+              />
+              <path
+                d="M28 40c0-8 6-14 12-14s12 6 12 14-6 14-12 14"
+                stroke="#fefffe"
+                strokeWidth="3"
+                fill="none"
+                filter="url(#glow)"
+              />
+              <path
+                d="M40 28v8l6 2-6 8v6"
+                stroke="#f7b620"
+                strokeWidth="3"
+                fill="none"
+                filter="url(#glow)"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+            </svg>
+          </motion.div>
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4 text-[#fefffe] drop-shadow-lg">
+            Welcome to{" "}
+            <span className="text-[#f7b620] drop-shadow-lg">IntelliGuide</span>
+          </h1>
+          <p className="text-lg md:text-2xl font-medium text-[#fefffe] opacity-90 mb-2">
+            Your AI-powered assistant for policies, procedures, and precision.
+          </p>
+        </div>
+      </motion.div>
+      {/* Right: Sign Up Form */}
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+        className="relative z-10 flex w-full md:w-1/2 h-full items-center justify-center py-12 px-6 md:px-12"
+      >
+        <form
+          onSubmit={handleSubmit}
+          className="w-full max-w-md bg-[rgba(254,255,254,0.08)] backdrop-blur-lg border border-white/15 rounded-2xl shadow-2xl px-8 py-10 flex flex-col gap-7"
+          style={{
+            boxShadow:
+              "0 8px 32px 0 rgba(148,28,138,0.18), 0 1.5px 8px 0 #f7b62044",
+          }}
+          aria-label="Sign up"
+          noValidate
+        >
+          <h2 className="text-2xl md:text-3xl font-bold mb-2 text-[#fefffe] text-center md:text-left">
+            Create your account
+          </h2>
           {/* Full Name */}
-          <div>
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="fullName"
-              className="block text-sm font-medium text-blue-900 mb-1"
+              className="text-[#fefffe] text-base font-medium mb-1"
             >
               Full Name
             </label>
-            <motion.input
+            <input
               id="fullName"
               name="fullName"
               type="text"
               autoComplete="name"
-              className={`w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 transition-all bg-white/70 shadow-sm ${
-                errors.fullName && touched.fullName
-                  ? "border-red-400 ring-2 ring-red-300"
-                  : "border-blue-200 focus:ring-blue-400"
-              }`}
+              className={`bg-transparent border-0 border-b border-white/30 text-[#fefffe] placeholder-transparent focus:border-[#f7b620] focus:ring-0 focus:outline-none transition-all py-2 px-0 text-lg
+                ${
+                  errors.fullName && touched.fullName
+                    ? "border-[#f7b620] shadow-[0_0_8px_0_#f7b62077]"
+                    : ""
+                }
+              `}
               value={form.fullName}
               onChange={handleChange}
               onBlur={handleBlur}
               aria-invalid={!!errors.fullName}
               aria-describedby={errors.fullName ? "fullName-error" : undefined}
               required
-              whileFocus={{ scale: 1.03, boxShadow: "0 0 0 4px #93c5fd55" }}
+              style={{ fontFamily: "inherit" }}
             />
             {errors.fullName && touched.fullName && (
-              <span
+              <motion.span
                 id="fullName-error"
-                className="text-xs text-red-500 mt-1 block"
+                className="text-xs text-[#f7b620] mt-1"
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 {errors.fullName}
-              </span>
+              </motion.span>
             )}
           </div>
           {/* Email */}
-          <div>
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-blue-900 mb-1"
+              className="text-[#fefffe] text-base font-medium mb-1"
             >
               Email
             </label>
-            <motion.input
+            <input
               id="email"
               name="email"
               type="email"
               autoComplete="email"
-              className={`w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 transition-all bg-white/70 shadow-sm ${
-                errors.email && touched.email
-                  ? "border-red-400 ring-2 ring-red-300"
-                  : "border-blue-200 focus:ring-blue-400"
-              }`}
+              className={`bg-transparent border-0 border-b border-white/30 text-[#fefffe] placeholder-transparent focus:border-[#f7b620] focus:ring-0 focus:outline-none transition-all py-2 px-0 text-lg
+                ${
+                  errors.email && touched.email
+                    ? "border-[#f7b620] shadow-[0_0_8px_0_#f7b62077]"
+                    : ""
+                }
+              `}
               value={form.email}
               onChange={handleChange}
               onBlur={handleBlur}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? "email-error" : undefined}
               required
-              whileFocus={{ scale: 1.03, boxShadow: "0 0 0 4px #93c5fd55" }}
+              style={{ fontFamily: "inherit" }}
             />
             {errors.email && touched.email && (
-              <span
+              <motion.span
                 id="email-error"
-                className="text-xs text-red-500 mt-1 block"
+                className="text-xs text-[#f7b620] mt-1"
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 {errors.email}
-              </span>
+              </motion.span>
             )}
           </div>
           {/* Password */}
-          <div>
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-blue-900 mb-1"
+              className="text-[#fefffe] text-base font-medium mb-1"
             >
               Password
             </label>
-            <motion.input
+            <input
               id="password"
               name="password"
               type="password"
               autoComplete="new-password"
-              className={`w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 transition-all bg-white/70 shadow-sm ${
-                errors.password && touched.password
-                  ? "border-red-400 ring-2 ring-red-300"
-                  : "border-blue-200 focus:ring-blue-400"
-              }`}
+              className={`bg-transparent border-0 border-b border-white/30 text-[#fefffe] placeholder-transparent focus:border-[#f7b620] focus:ring-0 focus:outline-none transition-all py-2 px-0 text-lg
+                ${
+                  errors.password && touched.password
+                    ? "border-[#f7b620] shadow-[0_0_8px_0_#f7b62077]"
+                    : ""
+                }
+              `}
               value={form.password}
               onChange={handleChange}
               onBlur={handleBlur}
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? "password-error" : undefined}
               required
-              whileFocus={{ scale: 1.03, boxShadow: "0 0 0 4px #93c5fd55" }}
+              style={{ fontFamily: "inherit" }}
             />
             {errors.password && touched.password && (
-              <span
+              <motion.span
                 id="password-error"
-                className="text-xs text-red-500 mt-1 block"
+                className="text-xs text-[#f7b620] mt-1"
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 {errors.password}
-              </span>
+              </motion.span>
             )}
           </div>
           {/* Confirm Password */}
-          <div>
+          <div className="flex flex-col gap-1">
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium text-blue-900 mb-1"
+              className="text-[#fefffe] text-base font-medium mb-1"
             >
               Confirm Password
             </label>
-            <motion.input
+            <input
               id="confirmPassword"
               name="confirmPassword"
               type="password"
               autoComplete="new-password"
-              className={`w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 transition-all bg-white/70 shadow-sm ${
-                errors.confirmPassword && touched.confirmPassword
-                  ? "border-red-400 ring-2 ring-red-300"
-                  : "border-blue-200 focus:ring-blue-400"
-              }`}
+              className={`bg-transparent border-0 border-b border-white/30 text-[#fefffe] placeholder-transparent focus:border-[#f7b620] focus:ring-0 focus:outline-none transition-all py-2 px-0 text-lg
+                ${
+                  errors.confirmPassword && touched.confirmPassword
+                    ? "border-[#f7b620] shadow-[0_0_8px_0_#f7b62077]"
+                    : ""
+                }
+              `}
               value={form.confirmPassword}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -244,52 +343,66 @@ const Register: React.FC = () => {
                 errors.confirmPassword ? "confirmPassword-error" : undefined
               }
               required
-              whileFocus={{ scale: 1.03, boxShadow: "0 0 0 4px #93c5fd55" }}
+              style={{ fontFamily: "inherit" }}
             />
             {errors.confirmPassword && touched.confirmPassword && (
-              <span
+              <motion.span
                 id="confirmPassword-error"
-                className="text-xs text-red-500 mt-1 block"
+                className="text-xs text-[#f7b620] mt-1"
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 {errors.confirmPassword}
-              </span>
+              </motion.span>
             )}
           </div>
-        </div>
-        {/* Submit Button */}
-        <div>
-          <motion.button
-            type="submit"
-            className={`w-full flex items-center justify-center px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold text-base shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-150 ${
-              loading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
-            aria-busy={loading}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {loading ? (
-              <span className="flex items-center">
-                <LoadingSpinner small />
-                <span className="ml-2">Signing up...</span>
-              </span>
-            ) : (
-              "Sign Up"
-            )}
-          </motion.button>
-        </div>
-        {/* Redirect to Login */}
-        <div className="text-center text-sm text-blue-700 mt-2">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-blue-600 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-400 rounded transition-all"
-          >
-            Login
-          </Link>
-        </div>
-      </motion.form>
-    </AuthContainer>
+          {/* Submit Button */}
+          <div>
+            <motion.button
+              type="submit"
+              aria-label="Sign up"
+              className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold text-lg bg-[#f7b620] text-[#fefffe] shadow-lg transition-all duration-150
+                hover:shadow-[0_0_16px_0_#f7b62099] hover:bg-[#ffd966] focus:outline-none focus:ring-2 focus:ring-[#f7b620] focus:ring-offset-2
+                ${loading ? "opacity-70 cursor-not-allowed" : ""}
+              `}
+              disabled={loading}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              {loading ? (
+                <span className="flex items-center">
+                  <LoadingSpinner small />
+                  <span className="ml-2">Signing up...</span>
+                </span>
+              ) : (
+                "Sign Up"
+              )}
+            </motion.button>
+          </div>
+          {/* Redirect to Login */}
+          <div className="text-center text-sm mt-2">
+            <span className="text-[#fefffe]">Already have an account? </span>
+            <Link
+              to="/login"
+              className="text-[#fefffe] hover:text-[#941c8a] font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[#f7b620] rounded"
+            >
+              Login
+            </Link>
+          </div>
+        </form>
+      </motion.div>
+      {/* Responsive stacking: branding on top on mobile */}
+      <style>
+        {`
+          @media (max-width: 767px) {
+            .md\\:w-1\\/2 { width: 100% !important; }
+            .md\\:text-6xl { font-size: 2.5rem !important; }
+            .md\\:px-12 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+          }
+        `}
+      </style>
+    </div>
   );
 };
 
