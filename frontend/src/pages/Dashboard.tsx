@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 import {
   LineChart,
   Line,
@@ -30,6 +32,7 @@ interface GraphData {
 }
 
 const Dashboard: React.FC = () => {
+  const { role } = useAuth();
   const [stats, setStats] = useState<Stats | null>(null);
   const [activityLog, setActivityLog] = useState<Activity[]>([]);
   const [graphData, setGraphData] = useState<GraphData[]>([]);
@@ -75,63 +78,28 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  if (role === "admin") {
+    return (
+      <div className="p-8">
+        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+        <p>Welcome, Admin! Here are your admin-specific stats and tools.</p>
+      </div>
+    );
+  }
+
+  if (role === "staff") {
+    return (
+      <div className="p-8">
+        <h1 className="text-2xl font-bold">Staff Dashboard</h1>
+        <p>Welcome, Staff! Here are your staff-specific stats and tools.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-lg font-semibold">Total Users</h2>
-          <p className="text-3xl font-bold">{stats?.totalUsers}</p>
-        </div>
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-lg font-semibold">Total Orders</h2>
-          <p className="text-3xl font-bold">{stats?.totalOrders}</p>
-        </div>
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-lg font-semibold">Total Products</h2>
-          <p className="text-3xl font-bold">{stats?.totalProducts}</p>
-        </div>
-      </div>
-
-      {/* Recent Activity Log */}
-      <div className="bg-white shadow-md rounded-lg p-6 mb-8">
-        <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
-        <ul className="divide-y divide-gray-200">
-          {activityLog.map((activity) => (
-            <li key={activity.id} className="py-2">
-              <p>{activity.action}</p>
-              <p className="text-sm text-gray-500">
-                {new Date(activity.timestamp).toLocaleString()}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Graph */}
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-lg font-semibold mb-4">
-          Orders and Users Over Time
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={graphData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="orders"
-              stroke="#8884d8"
-              activeDot={{ r: 8 }}
-            />
-            <Line type="monotone" dataKey="users" stroke="#82ca9d" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <p>Welcome! Your role is not recognized.</p>
     </div>
   );
 };

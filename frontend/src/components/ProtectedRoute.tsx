@@ -9,13 +9,16 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  allowedRoles,
+  allowedRoles = [],
 }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, role } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" />;
+  }
+
+  if (allowedRoles.length > 0 && !allowedRoles.includes(role || "")) {
+    return <Navigate to="/" />;
   }
 
   return <>{children}</>;

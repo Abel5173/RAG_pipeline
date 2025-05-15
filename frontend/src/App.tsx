@@ -1,7 +1,8 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import AdminLayout from "./components/layout/AdminLayout";
-import Login from "./pages/Login.tsx";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Users from "./pages/Users";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -10,7 +11,11 @@ import ErrorBoundary from "./components/ErrorBoundary";
 function App() {
   return (
     <Routes>
+      {/* Public pages: no AdminLayout */}
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Protected/admin pages: use AdminLayout */}
       <Route
         path="/*"
         element={

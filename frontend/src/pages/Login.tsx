@@ -23,22 +23,12 @@ const Login: React.FC = () => {
     };
 
     if (username === mockAdmin.username && password === mockAdmin.password) {
-      // Simulate a successful login for admin
-      const mockToken = JSON.stringify({
-        token: "mock-jwt-token",
-        role: "admin",
-      });
-      login(mockToken);
+      login("mock-jwt-token", mockAdmin.role); // Pass the role
     } else if (
       username === mockStaff.username &&
       password === mockStaff.password
     ) {
-      // Simulate a successful login for staff
-      const mockToken = JSON.stringify({
-        token: "mock-jwt-token",
-        role: "staff",
-      });
-      login(mockToken);
+      login("mock-jwt-token", mockStaff.role); // Pass the role
     } else {
       setError("Invalid username or password");
     }
